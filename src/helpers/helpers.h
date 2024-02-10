@@ -1,12 +1,13 @@
 #pragma once
 #include <string.h>
 
-#define EXIT_SUCCESS 0
-#define EXIT_FAILURE 1
+#include "../pager/pager.h"
 
 #define MAX_USERNAME_LENGTH 32
 #define MAX_EMAIL_LENGTH 255
-#define MAX_PAGES_PER_TABLE 100
+
+#define MAX_ROWS_PER_PAGE (PAGE_SIZE / ROW_SIZE)
+#define MAX_ROWS_PER_TABLE (MAX_ROWS_PER_PAGE * MAX_PAGES_PER_TABLE)
 
 typedef enum { STATEMENT_INSERT, STATEMENT_SELECT } StatementType;
 
@@ -18,7 +19,7 @@ typedef struct {
 
 typedef struct {
   u_int32_t total_rows;
-  void *pages[MAX_PAGES_PER_TABLE];
+  Pager *pager;
 } Table;
 
 typedef struct {
@@ -36,8 +37,12 @@ InputBuffer *new_input_buffer();
 
 void close_input_buffer(InputBuffer *input_buffer);
 
-Table *new_table();
+Table *new_table(char *filepath);
 
 void free_table(Table *table);
 
 void print_prompt();
+
+void free_pager(Pager *pager);
+
+void db_close(Table *table);

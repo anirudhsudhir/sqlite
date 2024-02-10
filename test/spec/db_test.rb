@@ -1,8 +1,11 @@
 describe 'database' do
+  before do
+    `rm -rf test.db`
+  end
   db_prompt = 'Enter query'
   def run_script(commands)
     raw_output = nil
-    IO.popen('./db', 'r+') do |pipe|
+    IO.popen('./db test.db', 'r+') do |pipe|
       commands.each do |command|
         pipe.puts command
       end
@@ -83,5 +86,25 @@ describe 'database' do
                                     "#{db_prompt} > Executed successfully",
                                     "#{db_prompt} > "
                                   ])
+  end
+
+  it 'keeps data after closing connection' do
+    result1 = run_script([
+                           'insert 1 user1 person1@example.com',
+                           '.exit'
+                         ])
+    expect(result1).to match_array([
+                                     "#{db_prompt} > Executed successfully",
+                                     "#{db_prompt} > "
+                                   ])
+    result2 = run_script([
+                           'select',
+                           '.exit'
+                         ])
+    expect(result2).to match_array([
+                                     "#{db_prompt} > (1, user1, person1@example.com)",
+                                     'Executed successfully',
+                                     "#{db_prompt} > "
+                                   ])
   end
 end

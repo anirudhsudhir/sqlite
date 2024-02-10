@@ -5,9 +5,14 @@
 #include "helpers/helpers.h"
 #include "virtualmachine/virtualmachine.h"
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    printf("Error: Path to db file not provided\n");
+    exit(EXIT_FAILURE);
+  }
+
   InputBuffer *input_buffer = new_input_buffer();
-  Table *table = new_table();
+  Table *table = new_table(argv[1]);
   while (true) {
     print_prompt();
     read_query(input_buffer);

@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "virtualmachine.h"
 
@@ -19,12 +18,9 @@ ExecutionResult execute_prepared_statement(Statement *statement, Table *table) {
   }
 }
 
-int *compute_offset(Table *table, u_int32_t row_num) {
+void *compute_offset(Table *table, u_int32_t row_num) {
   int page_num = row_num / MAX_ROWS_PER_PAGE;
-  void *page = table->pages[page_num];
-  if (page == NULL) {
-    page = table->pages[page_num] = malloc(PAGE_SIZE);
-  }
+  void *page = get_page(table->pager, page_num);
   u_int32_t byte_offset = (row_num % MAX_ROWS_PER_PAGE) * ROW_SIZE;
 
   return page + byte_offset;
