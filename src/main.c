@@ -29,6 +29,12 @@ int main() {
     case PREPARE_SYNTAX_ERROR:
       printf("Syntax error in SQL command\n");
       continue;
+    case PREPARE_STRING_LENGTH_EXCEEDED:
+      printf("Invalid string length\n");
+      continue;
+    case PREPARE_ID_NEGATIVE:
+      printf("ID must be positive\n");
+      continue;
     case PREPARE_FAILURE:
       printf("Unable to process SQL command '%s'\n", input_buffer->buffer);
       continue;
@@ -39,7 +45,6 @@ int main() {
       printf("Executed successfully\n");
       break;
     case EXECUTION_FAILURE:
-      printf("Execution failed\n");
       break;
     }
   }

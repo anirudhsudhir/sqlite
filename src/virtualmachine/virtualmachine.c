@@ -13,7 +13,7 @@ const int ROW_EMAIL_OFFSET = ROW_USERNAME_OFFSET + ROW_USERNAME_SIZE;
 ExecutionResult execute_prepared_statement(Statement *statement, Table *table) {
   switch (statement->type) {
   case STATEMENT_INSERT:
-    return perform_insert_operation(table, &(statement->row_to_insert));
+    return perform_insert_operation(table, &(statement->row));
   case STATEMENT_SELECT:
     return perform_select_operation(table);
   }
@@ -45,11 +45,14 @@ void deserialize_rows(void *source, Row *destination) {
 }
 
 void print_row(Row *row) {
-  printf("(%d,%s,%s)\n", row->ID, row->USERNAME, row->EMAIL);
+  printf("(%d, %s, %s)\n", row->ID, row->USERNAME, row->EMAIL);
 }
 
 ExecutionResult perform_insert_operation(Table *table, Row *row_to_insert) {
-
+  if (table->total_rows == MAX_ROWS_PER_TABLE) {
+    printf("Error: Table full.\n");
+    return EXECUTION_FAILURE;
+  }
   serialize_rows(row_to_insert, compute_offset(table, table->total_rows));
   table->total_rows += 1;
 

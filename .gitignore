@@ -1,2 +1,3 @@
-sqlite
-test/
+test/bin/
+
+db

@@ -16,19 +16,35 @@ void read_query(InputBuffer *input_buffer) {
   input_buffer->buffer[input_length - 1] = 0;
 }
 
+PreparationResult prepare_insert_statement(InputBuffer *input_buffer,
+                                           Statement *statement) {
+  strtok(input_buffer->buffer, " ");
+  char *id = strtok(NULL, " ");
+  char *username = strtok(NULL, " ");
+  char *email = strtok(NULL, " ");
+  if (id == NULL || username == NULL || email == NULL) {
+    return PREPARE_SYNTAX_ERROR;
+  }
+  if ((strlen(username) > MAX_USERNAME_LENGTH) ||
+      (strlen(email) > MAX_EMAIL_LENGTH)) {
+    return PREPARE_STRING_LENGTH_EXCEEDED;
+  }
+  int id_num = atoi(id);
+  statement->row.ID = id_num;
+  if (id_num < 0) {
+    return PREPARE_ID_NEGATIVE;
+  }
+
+  strcpy(statement->row.USERNAME, username);
+  strcpy(statement->row.EMAIL, email);
+  return PREPARE_SUCCESS;
+}
+
 PreparationResult prepare_statement(InputBuffer *input_buffer,
                                     Statement *statement) {
   if (strncmp(input_buffer->buffer, "insert", 6) == 0) {
     statement->type = STATEMENT_INSERT;
-    int args_read = sscanf(
-        input_buffer->buffer, "insert %d %s %s", &(statement->row_to_insert.ID),
-        statement->row_to_insert.USERNAME, statement->row_to_insert.EMAIL);
-
-    if (args_read < 3) {
-      return PREPARE_SYNTAX_ERROR;
-    }
-
-    return PREPARE_SUCCESS;
+    return prepare_insert_statement(input_buffer, statement);
   } else if (strncmp(input_buffer->buffer, "select", 6) == 0) {
     statement->type = STATEMENT_SELECT;
     return PREPARE_SUCCESS;

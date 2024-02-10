@@ -4,8 +4,8 @@
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 
-#define USERNAME_MAX_LENGTH 32
-#define EMAIL_MAX_LENGTH 255
+#define MAX_USERNAME_LENGTH 32
+#define MAX_EMAIL_LENGTH 255
 #define MAX_PAGES_PER_TABLE 100
 
 typedef enum { STATEMENT_INSERT, STATEMENT_SELECT } StatementType;
@@ -23,13 +23,13 @@ typedef struct {
 
 typedef struct {
   u_int32_t ID;
-  char USERNAME[USERNAME_MAX_LENGTH];
-  char EMAIL[EMAIL_MAX_LENGTH];
+  char USERNAME[MAX_USERNAME_LENGTH + 1];
+  char EMAIL[MAX_EMAIL_LENGTH + 1];
 } Row;
 
 typedef struct {
   StatementType type;
-  Row row_to_insert;
+  Row row;
 } Statement;
 
 InputBuffer *new_input_buffer();
